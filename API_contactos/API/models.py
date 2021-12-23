@@ -6,3 +6,4 @@ class contactos(models.Model):
     nombre = models.CharField(max_length=255, blank= False, null= False)
     numero = models.CharField(max_length=255, blank= False, null= False)
     
+    

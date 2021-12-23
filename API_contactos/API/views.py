@@ -1,6 +1,7 @@
+from django.http.response import HttpResponse
 from django.shortcuts import render
 
-from rest_framework import viewsets
+from rest_framework import serializers, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,3 +31,25 @@ class crearContacto(APIView):
         return Response({"status":"Datos guardados"},status=status.HTTP_200_OK) 
       else:
         return Response({"status": "datos no ingresados"}, status=status.HTTP_400_BAD_REQUEST)
+
+class listarContactos(APIView):
+    def get(self, request):
+      
+        try:
+            with connection.cursor() as cursor:
+                query = '''SELECT *
+                            FROM contactos c 
+                        '''
+                cursor.execute(query)
+                
+                registros = [dict((cursor.description[i][0], value) \
+                            for i, value in enumerate(row)) for row in cursor.fetchall()]
+                
+                json_output = json.dumps([dict(ix) for ix in registros] )
+                print(f"WE ARE HERE!!!!!!!!! {json_output}")
+                #serializer = ContactosSerializer(json_output)
+
+                return HttpResponse(json_output, content_type='application/json')
+        except:    
+            return Response({"status": "No encontrado"}, status=status.HTTP_404_NOT_FOUND)
+        
